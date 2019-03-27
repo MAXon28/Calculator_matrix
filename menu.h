@@ -4,22 +4,22 @@
 #include <QMainWindow>
 
 namespace Ui {
-class Menu;
+class MainWindow;
 }
 
-class Menu : public QMainWindow
+class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit Menu(QWidget *parent = nullptr);
-    ~Menu();
+    explicit MainWindow(QWidget *parent = nullptr);
+    ~MainWindow();
 
 private slots:
     void on_pushButton_clicked();
 
 private:
-    Ui::Menu *ui;
+    Ui::MainWindow *ui;
 };
 
 #endif // MENU_H

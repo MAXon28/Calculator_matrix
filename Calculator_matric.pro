@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2019-03-10T23:47:05
+# Project created by QtCreator 2019-03-10T20:14:37
 #
 #-------------------------------------------------
 
@@ -8,7 +8,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = Calculator_matric_1
+TARGET = Calculator_matric
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -26,16 +26,13 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-        menu.cpp \
-    sum_sub_matric.cpp
+        menu.cpp
 
 HEADERS += \
-        menu.h \
-    sum_sub_matric.h
+        menu.h
 
 FORMS += \
-        menu.ui \
-    sum_sub_matric.ui
+        menu.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
