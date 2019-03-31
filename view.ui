@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
-  <property name="enabled">
-   <bool>true</bool>
-  </property>
+ <class>View</class>
+ <widget class="QMainWindow" name="View">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>425</width>
-    <height>595</height>
+    <width>445</width>
+    <height>535</height>
    </rect>
   </property>
   <property name="palette">
@@ -78,44 +75,107 @@
    </palette>
   </property>
   <property name="windowTitle">
-   <string>Калькулятор матриц</string>
+   <string>View</string>
   </property>
-  <property name="windowFilePath">
-   <string/>
-  </property>
-  <widget class="QWidget" name="widget">
-   <widget class="Line" name="line">
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QComboBox" name="Column">
     <property name="geometry">
      <rect>
-      <x>50</x>
-      <y>180</y>
-      <width>361</width>
-      <height>20</height>
+      <x>180</x>
+      <y>20</y>
+      <width>31</width>
+      <height>22</height>
      </rect>
     </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
+    <item>
+     <property name="text">
+      <string>2</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>3</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>4</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>5</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>6</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>7</string>
+     </property>
+    </item>
    </widget>
-   <widget class="QLabel" name="label_3">
+   <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>177</y>
-      <width>41</width>
-      <height>16</height>
+      <y>320</y>
+      <width>401</width>
+      <height>151</height>
      </rect>
     </property>
-    <property name="font">
-     <font>
-      <pointsize>8</pointsize>
-      <weight>75</weight>
-      <bold>true</bold>
-     </font>
+    <property name="title">
+     <string>Операции с одной матрицей</string>
     </property>
-    <property name="text">
-     <string>Меню</string>
+    <property name="flat">
+     <bool>true</bool>
     </property>
+    <property name="checkable">
+     <bool>false</bool>
+    </property>
+    <widget class="QWidget" name="verticalLayoutWidget_2">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>20</y>
+       <width>401</width>
+       <height>121</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_4">
+      <item>
+       <widget class="QPushButton" name="pushButton_7">
+        <property name="text">
+         <string>Умножение матрицы на число</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_8">
+        <property name="text">
+         <string>Транспонированная матрица</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_9">
+        <property name="text">
+         <string>Определитель матрицы (детерминант)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_10">
+        <property name="text">
+         <string>Обратная матрица</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox">
     <property name="enabled">
@@ -150,16 +210,16 @@
        <height>80</height>
       </rect>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
+     <layout class="QVBoxLayout" name="verticalLayout_5">
       <item>
-       <widget class="QPushButton" name="pushButton_2">
+       <widget class="QPushButton" name="pushButton_11">
         <property name="text">
          <string>Умножение</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="pushButton_12">
         <property name="text">
          <string>Сложение / вычитание</string>
         </property>
@@ -168,64 +228,61 @@
      </layout>
     </widget>
    </widget>
-   <widget class="QGroupBox" name="groupBox_2">
+   <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>320</y>
-      <width>401</width>
-      <height>151</height>
+      <y>20</y>
+      <width>111</width>
+      <height>16</height>
      </rect>
     </property>
-    <property name="title">
-     <string>Операции с одной матрицей</string>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
     </property>
-    <property name="flat">
-     <bool>true</bool>
+    <property name="text">
+     <string>Размер матрицы:</string>
     </property>
-    <property name="checkable">
-     <bool>false</bool>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>177</y>
+      <width>41</width>
+      <height>16</height>
+     </rect>
     </property>
-    <widget class="QWidget" name="verticalLayoutWidget_2">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>20</y>
-       <width>401</width>
-       <height>121</height>
-      </rect>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
-      <item>
-       <widget class="QPushButton" name="pushButton_3">
-        <property name="text">
-         <string>Умножение матрицы на число</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="pushButton_4">
-        <property name="text">
-         <string>Транспонированная матрица</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="pushButton_5">
-        <property name="text">
-         <string>Определитель матрицы (детерминант)</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="pushButton_6">
-        <property name="text">
-         <string>Обратная матрица</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Меню</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>20</y>
+      <width>16</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>x</string>
+    </property>
    </widget>
    <widget class="QScrollArea" name="scrollArea">
     <property name="geometry">
@@ -290,86 +347,23 @@
      </widget>
     </widget>
    </widget>
-   <widget class="QLabel" name="label">
+   <widget class="Line" name="line">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>20</y>
-      <width>111</width>
-      <height>16</height>
+      <x>50</x>
+      <y>180</y>
+      <width>361</width>
+      <height>20</height>
      </rect>
     </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Размер матрицы:</string>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
     </property>
    </widget>
    <widget class="QComboBox" name="Row">
     <property name="geometry">
      <rect>
       <x>120</x>
-      <y>20</y>
-      <width>31</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <item>
-     <property name="text">
-      <string>2</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>3</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>4</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>5</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>6</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>7</string>
-     </property>
-    </item>
-   </widget>
-   <widget class="QLabel" name="label_2">
-    <property name="geometry">
-     <rect>
-      <x>160</x>
-      <y>20</y>
-      <width>16</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>x</string>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="Column">
-    <property name="geometry">
-     <rect>
-      <x>180</x>
       <y>20</y>
       <width>31</width>
       <height>22</height>
