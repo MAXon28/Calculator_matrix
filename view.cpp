@@ -19,12 +19,14 @@ View::~View()
 
 void View::on_Row_currentIndexChanged(int index)
 {
-
+    size->onRowcurrentIndexChanged(index);
 }
 
 void View::on_Column_currentIndexChanged(int index)
 {
-
+    size->onColumncurrentIndexChanged(index);
 }
+
+
 
 

@@ -12,10 +12,9 @@ class Controller_matrix
 public:
     Controller_matrix();
     ~Controller_matrix ();
-    int row;
-    int column;
-    void onRowcurrentIndexChanged (int row);
-    void onColumncurrentIndexChanged (int column);
+    void onRowcurrentIndexChanged (int index);
+    void onColumncurrentIndexChanged (int index);
+    Model_matrix *array_size;
 };
 
 #endif // CONTROLLER_MATRIX_H

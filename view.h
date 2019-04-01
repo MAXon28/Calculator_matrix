@@ -21,6 +21,8 @@ public:
     explicit View(QWidget *parent = nullptr);
     ~View();
     void get_matrix (int rows, int columns);
+     Controller_matrix *size;
+     Model_matrix *array;
 
 public slots:
     void on_Row_currentIndexChanged (int index);

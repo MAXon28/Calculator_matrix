@@ -2,21 +2,16 @@
 #include "view.h"
 #include "model_matrix.h"
 
-Controller_matrix::Controller_matrix()
-{
+Controller_matrix::Controller_matrix() {}
 
+Controller_matrix::~Controller_matrix() {}
+
+void Controller_matrix::onRowcurrentIndexChanged(int index)
+{
+    array_size->set_rows(index);
 }
 
-Controller_matrix::~Controller_matrix()
+void Controller_matrix::onColumncurrentIndexChanged(int index)
 {
-}
-
-void Controller_matrix::onRowcurrentIndexChanged(int row)
-{
-
-}
-
-void Controller_matrix::onColumncurrentIndexChanged(int column)
-{
-
+    array_size->set_columns(index);
 }

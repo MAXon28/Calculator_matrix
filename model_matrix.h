@@ -4,16 +4,14 @@
 
 class Model_matrix
 {
-private:
-    int rows;
-    int columns;
-
 public:
     explicit Model_matrix ();
     ~Model_matrix ();
-    void get_rows (int rows);
-    void get_columns (int columns);
-    void get_array ();
+    int set_rows (int index_r);
+    int set_columns (int index_c);
+    void get_size_array ();
+    int rows;
+    int columns;
 
 };
 
