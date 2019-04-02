@@ -1,4 +1,3 @@
-#include "controller_matrix.h"
 #include "view.h"
 #include "model_matrix.h"
 #include <QApplication>

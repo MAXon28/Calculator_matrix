@@ -5,13 +5,13 @@
 #include <QWidget>
 #include <QComboBox>
 #include <QLineEdit>
+#include "QString"
 
 namespace Ui {
 class View;
 }
 
 class Model_matrix;
-class Controller_matrix;
 
 class View : public QMainWindow
 {
@@ -20,17 +20,17 @@ class View : public QMainWindow
 public:
     explicit View(QWidget *parent = nullptr);
     ~View();
-    void get_matrix (int rows, int columns);
-     Controller_matrix *size;
-     Model_matrix *array;
 
-public slots:
-    void on_Row_currentIndexChanged (int index);
-    void on_Column_currentIndexChanged (int index);
+private slots:
+    void on_Row_currentTextChanged(const QString &arg1);
 
+    void on_Column_currentTextChanged(const QString &arg1);
 
 private:
     Ui::View *ui;
+    void Update_matrix();
+    Model_matrix *array;
+    /**Model_matrix *array_matrix;*/
 };
 
 #endif // VIEW_H

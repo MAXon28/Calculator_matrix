@@ -9,12 +9,13 @@ Model_matrix::~Model_matrix()
 {
 }
 
-int Model_matrix::set_rows(int index_r)
+void Model_matrix::set_rows(int r)
 {
-    return index_r;
+    rows = r;
 }
 
-int Model_matrix::set_columns(int index_c)
+void Model_matrix::set_columns(int c)
 {
-    return index_c;
+    columns = c;
 }
+
