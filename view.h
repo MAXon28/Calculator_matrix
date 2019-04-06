@@ -26,11 +26,14 @@ private slots:
 
     void on_Column_currentTextChanged(const QString &arg1);
 
+    void Update_matrix(const QString & r_c);
+
+    void on_Choise_of_number_currentTextChanged(const QString &arg1);
+
+
 private:
     Ui::View *ui;
-    void Update_matrix();
     Model_matrix *array;
-    /**Model_matrix *array_matrix;*/
 };
 
 #endif // VIEW_H

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>648</width>
-    <height>581</height>
+    <width>691</width>
+    <height>593</height>
    </rect>
   </property>
   <property name="palette">
@@ -78,7 +78,7 @@
    <string>Калькулятор матриц</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QGroupBox" name="groupBox_2">
+   <widget class="QGroupBox" name="one_Matrix">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -122,6 +122,43 @@
       </item>
       <item>
        <widget class="QPushButton" name="pushButton_9">
+        <property name="palette">
+         <palette>
+          <active>
+           <colorrole role="Button">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>170</red>
+              <green>255</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </active>
+          <inactive>
+           <colorrole role="Button">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>170</red>
+              <green>255</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </inactive>
+          <disabled>
+           <colorrole role="Button">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>170</red>
+              <green>255</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </disabled>
+         </palette>
+        </property>
         <property name="text">
          <string>Определитель матрицы (детерминант)</string>
         </property>
@@ -137,7 +174,7 @@
      </layout>
     </widget>
    </widget>
-   <widget class="QGroupBox" name="groupBox">
+   <widget class="QGroupBox" name="many_Matrix">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -191,7 +228,7 @@
      </layout>
     </widget>
    </widget>
-   <widget class="QLabel" name="label_3">
+   <widget class="QLabel" name="Menu">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -216,7 +253,7 @@
      <rect>
       <x>240</x>
       <y>20</y>
-      <width>401</width>
+      <width>441</width>
       <height>531</height>
      </rect>
     </property>
@@ -228,11 +265,14 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>399</width>
+       <width>439</width>
        <height>529</height>
       </rect>
      </property>
-     <widget class="QLabel" name="label">
+     <widget class="QLabel" name="Size_of_matrix">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -290,7 +330,7 @@
        </property>
       </item>
      </widget>
-     <widget class="QLabel" name="label_2">
+     <widget class="QLabel" name="x">
       <property name="geometry">
        <rect>
         <x>157</x>
@@ -351,13 +391,86 @@
      <widget class="QWidget" name="gridLayoutWidget">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>40</y>
-        <width>341</width>
-        <height>241</height>
+        <x>50</x>
+        <y>80</y>
+        <width>311</width>
+        <height>161</height>
        </rect>
       </property>
-      <layout class="QGridLayout" name="gridLayout"/>
+      <layout class="QGridLayout" name="gridLayout" rowstretch="0" columnstretch="0">
+       <property name="leftMargin">
+        <number>4</number>
+       </property>
+       <property name="topMargin">
+        <number>4</number>
+       </property>
+       <property name="rightMargin">
+        <number>4</number>
+       </property>
+       <property name="bottomMargin">
+        <number>4</number>
+       </property>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="gridLayoutWidget_2">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>310</y>
+        <width>311</width>
+        <height>161</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_2" rowstretch="0" columnstretch="0">
+       <property name="leftMargin">
+        <number>4</number>
+       </property>
+       <property name="topMargin">
+        <number>4</number>
+       </property>
+       <property name="rightMargin">
+        <number>4</number>
+       </property>
+       <property name="bottomMargin">
+        <number>4</number>
+       </property>
+      </layout>
+     </widget>
+     <widget class="QLabel" name="Matrix_1">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>150</y>
+        <width>31</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>A = </string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="Matrix_2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>380</y>
+        <width>31</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>B = </string>
+      </property>
      </widget>
     </widget>
    </widget>
@@ -409,7 +522,7 @@
      <enum>Qt::Horizontal</enum>
     </property>
    </widget>
-   <widget class="QComboBox" name="comboBox">
+   <widget class="QComboBox" name="Choise_of_number">
     <property name="geometry">
      <rect>
       <x>10</x>
