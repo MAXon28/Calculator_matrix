@@ -1,6 +1,11 @@
 #include "model_matrix.h"
 
-Model_matrix::Model_matrix(){}
+Model_matrix::Model_matrix()
+{
+    rows = 2;
+    columns = 2;
+    count_matrix = 1;
+}
 
 Model_matrix::~Model_matrix(){}
 
