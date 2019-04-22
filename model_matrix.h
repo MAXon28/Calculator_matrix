@@ -9,13 +9,14 @@ public:
     explicit Model_matrix ();
     ~Model_matrix ();
 
-    int rows;
-    int columns;
-    int count_matrix;
+    int rows; // Количество строк в матрице
+    int columns; // Количество столбцов в матрице
+    int count_matrix; // Количество матриц
 
     void set_rows (int r);
     void set_columns (int c);
-    void set_count_matrix (int count);
+    Model_matrix& operator++(int);
+
 };
 
 #endif // MODEL_MATRIX_H

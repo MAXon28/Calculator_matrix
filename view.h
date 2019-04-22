@@ -9,6 +9,8 @@
 #include <QDebug>
 #include <QScrollBar>
 #include "QDialog"
+#include "QVector"
+#include "QGridLayout"
 #include "model_matrix.h"
 
 namespace Ui {

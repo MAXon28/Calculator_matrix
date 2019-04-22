@@ -19,7 +19,8 @@ void Model_matrix::set_columns(int c)
     columns = c;
 }
 
-void Model_matrix::set_count_matrix(int count)
+Model_matrix& Model_matrix::operator++(int)
 {
-    count_matrix = count;
+    count_matrix++;
+    return *this;
 }
