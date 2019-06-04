@@ -27,11 +27,11 @@ CONFIG += c++11
 SOURCES += \
         main.cpp \
         view.cpp \
-    model_matrix.cpp
+    Logic_matrix.cpp
 
 HEADERS += \
         view.h \
-    model_matrix.h
+    Logic_matrix.h
 
 FORMS += \
         view.ui

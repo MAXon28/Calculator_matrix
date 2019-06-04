@@ -1,5 +1,5 @@
 #include "view.h"
-#include "model_matrix.h"
+#include "Logic_matrix.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
