@@ -16,7 +16,7 @@ private:
     QVector <QVector<double>> matrix_B_for_logic;
     QVector <QVector<double>> matrix_C_for_logic;
     QVector <QVector<double>> matrix_D_for_logic;
-    QVector<QVector<double>> result;
+    QVector <QVector<double>> result;
 public:
     explicit Logic_matrix ();
     ~Logic_matrix ();
@@ -31,15 +31,18 @@ public:
     void set_matrix(QVector<QVector<double> > matrix1, QVector<QVector<double> > matrix2);
     void set_matrix(QVector<QVector<double> > matrix1, QVector<QVector<double> > matrix2, QVector<QVector<double> > matrix3);
     void set_matrix(QVector<QVector<double> > matrix1, QVector<QVector<double> > matrix2, QVector<QVector<double> > matrix3, QVector<QVector<double> > matrix4);
-    void set_symbol(QString symbol, int element);
+    void set_symbol(QString symbol, int element); // Для работы со сложением и вычитанием матриц
     QVector<QVector<double>> matrix_mul(double number);
     QVector<QVector<double>> matrix_transporation();
     double det_matrix();
     QVector<QVector<double>> matrix_inverse();
+    Logic_matrix operator*(Logic_matrix matrix2);
     QVector<QVector<double>> sum_sub_matrix();
     double minor (QVector<QVector<double>> A_copy, int row, int column);
     Logic_matrix& operator++(int);
-
+    friend bool operator==(const Logic_matrix& matrix1, const Logic_matrix& matrix2);
+    QVector<QVector<double>> get_matrix();
+    Logic_matrix& operator--(int);
+    bool check_line_edit (QString line); // Проверка на правильность ввода в LineEdit
 };
-
 #endif

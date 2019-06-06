@@ -345,6 +345,52 @@ QVector<QVector<double>> Logic_matrix::matrix_inverse()
     return matrix_A_for_logic;
 }
 
+Logic_matrix Logic_matrix::operator*(Logic_matrix matrix2)
+{
+    Logic_matrix result;
+    result.matrix_A_for_logic.resize(rows);
+    for (int i = 0; i < rows; i++)
+    {
+        result.matrix_A_for_logic[i].resize(matrix2.columns);
+    }
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < matrix2.columns; j++)
+        {
+            result.matrix_A_for_logic[i][j] = 0;
+        }
+    }
+    int column_n = 0, row_k = 0;
+    for (int j = 0; j < matrix2.columns; j++)
+    {
+        for (int i = 0; i < rows; i++)
+        {
+            while (column_n < columns && row_k < matrix2.rows)
+            {
+                result.matrix_A_for_logic[i][j] = result.matrix_A_for_logic[i][j] + matrix_A_for_logic[i][column_n] * matrix2.matrix_A_for_logic[row_k][j];
+                column_n++;
+                row_k++;
+            }
+            column_n = 0;
+            row_k = 0;
+        }
+    }
+    matrix_A_for_logic.resize(rows);
+    for (int i = 0; i < rows; i++)
+    {
+        matrix_A_for_logic[i].resize(matrix2.columns);
+    }
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < matrix2.columns; j++)
+        {
+            matrix_A_for_logic[i][j] = result.matrix_A_for_logic[i][j];
+        }
+    }
+    columns = matrix2.columns;
+    return *this;
+}
+
 QVector<QVector<double>> Logic_matrix::sum_sub_matrix()
 {
     result.clear();
@@ -504,4 +550,131 @@ Logic_matrix& Logic_matrix::operator++(int)
 {
     count_matrix++;
     return *this;
+}
+
+bool operator==(const Logic_matrix& matrix1, const Logic_matrix& matrix2)
+{
+    if (matrix1.columns == matrix2.rows)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+QVector<QVector<double>> Logic_matrix::get_matrix()
+{
+    return matrix_A_for_logic;
+}
+
+Logic_matrix& Logic_matrix::operator--(int)
+{
+    count_matrix--;
+    return *this;
+}
+
+bool Logic_matrix::check_line_edit(QString line)
+{
+    int check = 0;
+    int check_dot = 0; // Счетчик точек
+    if (line.length() == 0)
+    {
+        return false;
+    }
+    else if (line[0] == " " && line [1] == " ")
+    {
+        if (line.length() == 2)
+        {
+            return false;
+        }
+        else
+        {
+            for (int i = 2; i < line.length(); i++)
+            {
+                if (i == 2)
+                {
+                    if (line[i] < 48 || line[i] > 57)
+                    {
+                        check++;
+                    }
+                }
+                else
+                {
+                    if ((line[i] < 48 || line[i] > 57) && (line[i] != "." && check_dot != 0))
+                    {
+                        check++;
+                    }
+                    if (line[i] == ".")
+                    {
+                        check_dot++;
+                    }
+                }
+            }
+        }
+    }
+    else if (line[0] == " ")
+    {
+        if (line.length() == 1)
+        {
+            return false;
+        }
+        else
+        {
+            for (int i = 1; i < line.length(); i++)
+            {
+                if (i == 1)
+                {
+                    if (line[i] < 48 || line[i] > 57)
+                    {
+                        check++;
+                    }
+                }
+                else
+                {
+                    if ((line[i] < 48 || ((line[i] > 57) && (line[i] != "." && check_dot != 0))))
+                    {
+                        check++;
+                    }
+                    if (line[i] == ".")
+                    {
+                        check_dot++;
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        for (int i = 0; i < line.length(); i++)
+        {
+            if (i == 0)
+            {
+                if (line[i] < 48 || line[i] > 57)
+                {
+                    check++;
+                }
+            }
+            else
+            {
+                if ((line[i] < 48 || line[i] > 57) && (line[i] != "." && check_dot != 0))
+                {
+                    check++;
+                }
+                if (line[i] == ".")
+                {
+                    check_dot++;
+                }
+            }
+        }
+    }
+    if (check == 0 && (check_dot == 0 || check_dot == 1))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }

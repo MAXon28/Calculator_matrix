@@ -5,9 +5,7 @@ View::View(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::View)
 {
-    ui->setupUi(this);
-    /**ui->pushButton_7->setStyleSheet("background-color: white");*/
-
+    ui->setupUi(this);   
 
     // Кнопки, которые нам нужны только для нескольких матриц
     ui->Add_matrix->setVisible(false);
@@ -67,12 +65,16 @@ View::View(QWidget *parent) :
         }
     }
 
+    check_add_delete = 0;
+
     // Через сигналы об изменениях получаем нужные значения для их обработки и вывода на экран
     connect (ui->Choise_of_number, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (on_Choise_of_number_currentTextChanged(const QString &)));
     connect (ui->Row, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (on_Row_currentTextChanged (const QString)));
     connect (ui->Column, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (on_Column_currentTextChanged(const QString)));
     connect (ui->Row, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (Update_matrix ()));
     connect (ui->Column, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (Update_matrix ()));
+    disconnect (ui->Row, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (on_mul_matrix_button_clicked()));
+    disconnect (ui->Column, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (on_mul_matrix_button_clicked()));
     connect (ui->variant_1, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (on_variant_1_currentTextChanged(const QString&)));
     connect (ui->variant_2, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (on_variant_2_currentTextChanged(const QString&)));
     connect (ui->variant_3, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (on_variant_3_currentTextChanged(const QString&)));
@@ -82,7 +84,6 @@ View::View(QWidget *parent) :
     connect (ui->Column_C, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (on_Column_C_currentTextChanged(const QString&)));
     connect (ui->Row_D, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (on_Row_D_currentTextChanged (const QString&)));
     connect (ui->Column_D, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (on_Column_D_currentTextChanged(const QString&)));
-
 }
 
 View::~View()
@@ -249,6 +250,8 @@ void View::on_Choise_of_number_currentTextChanged(const QString &arg1)
         ui->Delete_matrix->setEnabled(false);
         ui->tr_matrix->setVisible(false);
         ui->inversion_matrix->setVisible(false);
+        disconnect (ui->Add_matrix, SIGNAL(clicked()), this, SLOT (on_sum_sub_matrix_clicked()));
+        disconnect(ui->Delete_matrix, SIGNAL(clicked()), this, SLOT (on_sum_sub_matrix_clicked()));
 
         matrixB.resize(RowsMatrix);
         for (int i = 0; i < RowsMatrix; i++)
@@ -271,9 +274,12 @@ void View::on_Choise_of_number_currentTextChanged(const QString &arg1)
 
     else if (arg1 == "Одна матрица")
     {
+        check_add_delete = 0;
         array.set_count_matrix(1);
         disconnect (ui->Row, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (on_mul_matrix_button_clicked()));
         disconnect (ui->Column, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (on_mul_matrix_button_clicked()));
+        connect (ui->Row, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (Update_matrix ()));
+        connect (ui->Column, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (Update_matrix ()));
         ui->many_Matrix->setEnabled(false);
         ui->one_Matrix->setEnabled(true);
 
@@ -314,6 +320,7 @@ void View::on_Choise_of_number_currentTextChanged(const QString &arg1)
         ui->C_sum->setVisible(false);
         ui->D_sum->setVisible(false);
         ui->matrix_mul->setVisible(false);
+        ui->Notifications->setVisible(true);
         QLayoutItem* ch;
         while ((ch = ui->gridLayout_2->takeAt(0))!= nullptr)
         {
@@ -383,6 +390,41 @@ void View::on_Add_matrix_clicked()
                 ui->gridLayout_4->setColumnStretch(columnsMatrix, j);
             }
         }
+    }
+    if (check_add_delete == 1)
+    {
+       on_mul_matrix_button_clicked();
+    }
+}
+
+void View::on_Delete_matrix_clicked()
+{
+    int countMatrix = array.get_count_matrix();
+    QLayoutItem* deleted;
+    if (countMatrix == 4)
+    {
+        while ((deleted = ui->gridLayout_4->takeAt(0))!= nullptr)
+        {
+            delete deleted->widget();
+        }
+        ui->Matrix_4->setVisible(false);
+        ui->Add_matrix->setEnabled(true);
+        matrixD.clear();
+    }
+    if (countMatrix == 3)
+    {
+        while ((deleted = ui->gridLayout_3->takeAt(0))!= nullptr)
+        {
+            delete deleted->widget();
+        }
+        ui->Matrix_3->setVisible(false);
+        ui->Delete_matrix->setEnabled(false);
+        matrixC.clear();
+    }
+    array--;
+    if (check_add_delete == 1)
+    {
+       on_mul_matrix_button_clicked();
     }
 }
 
@@ -471,39 +513,66 @@ void View::on_mul_matrix_clicked()
     {
         matrix[i].resize(_columns);
     }
+    bool check_line = false;
     for (int i = 0; i < _rows; i++)
     {
         for (int j = 0; j < _columns; j++)
         {
-            one_element = matrixA[i][j]->text().toDouble();
-            matrix[i][j] = one_element;
-        }
-    }
-    array.set_matrix(matrix);
-    double number = ui->number->text().toDouble();
-    matrix = array.matrix_mul(number);
-    int check;
-    for (int i = 0; i < _rows; i++)
-    {
-        for (int j = 0; j < _columns; j++)
-        {
-            QLabel* size = new QLabel;
-            QFont font = size->font();
-            font.setPixelSize(12);
-            size->setFont(font);
-            check = matrix[i][j];
-            if(matrix[i][j] == check)
+            check_line = array.check_line_edit(matrixA[i][j]->text());
+            if (check_line == true)
             {
-                size->setText(QString("%1").arg(matrix[i][j], 0, 'f', 0));
+                one_element = matrixA[i][j]->text().toDouble();
+                matrix[i][j] = one_element;
             }
             else
             {
-                size->setText(QString("%1").arg(matrix[i][j], 0, 'f', 2));
+                error_scanf(i, j, matrixA);
+                matrixA[i][j]->setStyleSheet("QLineEdit { background: rgb(255, 255, 255);}");
+                break;
             }
-            ui->gridLayout_5->addWidget (size, i, j);
-            size->setFixedSize(28, 19);
-            ui->gridLayout_5->setRowStretch(1, i);
-            ui->gridLayout_5->setColumnStretch(1, j);
+        }
+        if (check_line == false)
+        {
+            break;
+        }
+    }
+    if (check_line == true)
+    {
+        check_line = array.check_line_edit(ui->number->text());
+        if (check_line == true)
+        {
+            array.set_matrix(matrix);
+            double number = ui->number->text().toDouble();
+            matrix = array.matrix_mul(number);
+            int check;
+            for (int i = 0; i < _rows; i++)
+            {
+                for (int j = 0; j < _columns; j++)
+                {
+                    QLabel* size = new QLabel;
+                    QFont font = size->font();
+                    font.setPixelSize(12);
+                    size->setFont(font);
+                    check = matrix[i][j];
+                    if(matrix[i][j] == check)
+                    {
+                        size->setText(QString("%1").arg(matrix[i][j], 0, 'f', 0));
+                    }
+                    else
+                    {
+                        size->setText(QString("%1").arg(matrix[i][j], 0, 'f', 2));
+                    }
+                    ui->gridLayout_5->addWidget (size, i, j);
+                    size->setFixedSize(28, 19);
+                    ui->gridLayout_5->setRowStretch(1, i);
+                    ui->gridLayout_5->setColumnStretch(1, j);
+                }
+            }
+        }
+        else
+        {
+            error_scanf();
+            ui->number->setStyleSheet("QLineEdit { background: rgb(255, 255, 255);}");
         }
     }
 }
@@ -524,38 +593,61 @@ void View::on_tr_matrix_clicked()
     {
         matrix[i].resize(columns);
     }
+    bool check_line_tr = false;
     for (int i = 0; i < rows; i++)
     {
         for (int j = 0; j < columns; j++)
         {
-            one_element = matrixA[i][j]->text().toDouble();
-            matrix[i][j] = one_element;
-        }
-    }
-    array.set_matrix(matrix);
-    matrix = array.matrix_transporation();
-    int check;
-    for (int i = 0; i < rows; i++)
-    {
-        for (int j = 0; j < columns; j++)
-        {
-            QLabel* size = new QLabel;
-            QFont font = size->font();
-            font.setPixelSize(12);
-            size->setFont(font);
-            check = matrix[i][j];
-            if(matrix[i][j] == check)
+            check_line_tr = array.check_line_edit(matrixA[i][j]->text());
+            if (check_line_tr == true)
             {
-                size->setText(QString("%1").arg(matrix[i][j], 0, 'f', 0));
+                one_element = matrixA[i][j]->text().toDouble();
+                matrix[i][j] = one_element;
             }
             else
             {
-                size->setText(QString("%1").arg(matrix[i][j], 0, 'f', 2));
+                error_scanf(i, j, matrixA);
+                matrixA[i][j]->setStyleSheet("QLineEdit { background: rgb(255, 255, 255);}");
+                break;
             }
-            ui->gridLayout_5->addWidget (size, i, j);
-            size->setFixedSize(28, 19);
-            ui->gridLayout_5->setRowStretch(1, i);
-            ui->gridLayout_5->setColumnStretch(1, j);
+        }
+        if (check_line_tr == false)
+        {
+            break;
+        }
+    }
+    if (check_line_tr == true)
+    {
+        array.set_matrix(matrix);
+        matrix.resize(columns);
+        for (int i = 0; i < columns; i++)
+        {
+            matrix[i].resize(rows);
+        }
+        matrix = array.matrix_transporation();
+        int check;
+        for (int i = 0; i < columns; i++)
+        {
+            for (int j = 0; j < rows; j++)
+            {
+                QLabel* size = new QLabel;
+                QFont font = size->font();
+                font.setPixelSize(12);
+                size->setFont(font);
+                check = matrix[i][j];
+                if(matrix[i][j] == check)
+                {
+                    size->setText(QString("%1").arg(matrix[i][j], 0, 'f', 0));
+                }
+                else
+                {
+                    size->setText(QString("%1").arg(matrix[i][j], 0, 'f', 2));
+                }
+                ui->gridLayout_5->addWidget (size, i, j);
+                size->setFixedSize(28, 19);
+                ui->gridLayout_5->setRowStretch(1, i);
+                ui->gridLayout_5->setColumnStretch(1, j);
+            }
         }
     }
 }
@@ -578,35 +670,53 @@ void View::on_det_clicked()
         {
             matrix[i].resize(_columns);
         }
+        bool check_line_det = false;
         for (int i = 0; i < _rows; i++)
         {
             for (int j = 0; j < _columns; j++)
             {
-                one_element = matrixA[i][j]->text().toDouble();
-                matrix[i][j] = one_element;
+                check_line_det = array.check_line_edit(matrixA[i][j]->text());
+                if (check_line_det == true)
+                {
+                    one_element = matrixA[i][j]->text().toDouble();
+                    matrix[i][j] = one_element;
+                }
+                else
+                {
+                    error_scanf(i, j, matrixA);
+                    matrixA[i][j]->setStyleSheet("QLineEdit { background: rgb(255, 255, 255);}");
+                    break;
+                }
+            }
+            if (check_line_det == false)
+            {
+                break;
             }
         }
-        array.set_matrix(matrix);
-        double number;
-        number = array.det_matrix();
-        int check;
-        QLabel* size = new QLabel;
-        QFont font = size->font();
-        font.setPixelSize(12);
-        size->setFont(font);
-        check = number;
-        if(number == check)
+        if (check_line_det == true)
         {
-            size->setText(QString("%1").arg(number, 0, 'f', 0));
+            array.set_matrix(matrix);
+            double number;
+            number = array.det_matrix();
+            int check;
+            QLabel* size = new QLabel;
+            QFont font = size->font();
+            font.setPixelSize(12);
+            size->setFont(font);
+            check = number;
+            if(number == check)
+            {
+                size->setText(QString("%1").arg(number, 0, 'f', 0));
+            }
+            else
+            {
+                size->setText(QString("%1").arg(number, 0, 'f', 2));
+            }
+            ui->gridLayout_5->addWidget (size, 0, 0);
+            size->setFixedSize(28, 19);
+            ui->gridLayout_5->setRowStretch(_rows, 0);
+            ui->gridLayout_5->setColumnStretch(_columns, 0);
         }
-        else
-        {
-            size->setText(QString("%1").arg(number, 0, 'f', 2));
-        }
-        ui->gridLayout_5->addWidget (size, 0, 0);
-        size->setFixedSize(28, 19);
-        ui->gridLayout_5->setRowStretch(_rows, 0);
-        ui->gridLayout_5->setColumnStretch(_columns, 0);
     }
     else
     {
@@ -632,58 +742,76 @@ void View::on_inversion_matrix_clicked()
     {
         matrix[i].resize(_columns);
     }
+    bool check_line_inversion = false;
     for (int i = 0; i < _rows; i++)
     {
         for (int j = 0; j < _columns; j++)
         {
-            one_element = matrixA[i][j]->text().toDouble();
-            matrix[i][j] = one_element;
+            check_line_inversion = array.check_line_edit(matrixA[i][j]->text());
+            if (check_line_inversion == true)
+            {
+                one_element = matrixA[i][j]->text().toDouble();
+                matrix[i][j] = one_element;
+            }
+            else
+            {
+                error_scanf(i, j, matrixA);
+                matrixA[i][j]->setStyleSheet("QLineEdit { background: rgb(255, 255, 255);}");
+                break;
+            }
+        }
+        if (check_line_inversion == false)
+        {
+            break;
         }
     }
-    array.set_matrix(matrix);
-    if (_rows == _columns)
+    if (check_line_inversion == true)
     {
-        double det = array.det_matrix();
-        if (det != 0)
+        array.set_matrix(matrix);
+        if (_rows == _columns)
         {
-            matrix = array.matrix_inverse();
-            int check;
-            for (int i = 0; i < _rows; i++)
+            double det = array.det_matrix();
+            if (det != 0)
             {
-                for (int j = 0; j < _columns; j++)
+                matrix = array.matrix_inverse();
+                int check;
+                for (int i = 0; i < _rows; i++)
                 {
-                    QLabel* size = new QLabel;
-                    QFont font = size->font();
-                    font.setPixelSize(12);
-                    size->setFont(font);
-                    check = matrix[i][j];
-                    if(matrix[i][j] == check)
+                    for (int j = 0; j < _columns; j++)
                     {
-                        size->setText(QString("%1").arg(matrix[i][j], 0, 'f', 0));
+                        QLabel* size = new QLabel;
+                        QFont font = size->font();
+                        font.setPixelSize(12);
+                        size->setFont(font);
+                        check = matrix[i][j];
+                        if(matrix[i][j] == check)
+                        {
+                            size->setText(QString("%1").arg(matrix[i][j], 0, 'f', 0));
+                        }
+                        else
+                        {
+                            size->setText(QString("%1").arg(matrix[i][j], 0, 'f', 2));
+                        }
+                        ui->gridLayout_5->addWidget (size, i, j);
+                        size->setFixedSize(40, 19);
+                        ui->gridLayout_5->setRowStretch(1, i);
+                        ui->gridLayout_5->setColumnStretch(1, j);
                     }
-                    else
-                    {
-                        size->setText(QString("%1").arg(matrix[i][j], 0, 'f', 2));
-                    }
-                    ui->gridLayout_5->addWidget (size, i, j);
-                    size->setFixedSize(40, 19);
-                    ui->gridLayout_5->setRowStretch(1, i);
-                    ui->gridLayout_5->setColumnStretch(1, j);
                 }
+            }
+            else
+            {
+                QMessageBox messageBoxError;
+                messageBoxError.critical(nullptr, "Невозможно найти", "Определитель матрицы равен нулю!");
+                messageBoxError.setFixedSize(528,228);
             }
         }
         else
         {
             QMessageBox messageBoxError;
-            messageBoxError.critical(nullptr, "Невозможно найти", "Определитель матрицы равен нулю!");
+            messageBoxError.critical(nullptr, "Ошибка", "Матрица должна быть квадратной!");
             messageBoxError.setFixedSize(528,228);
         }
-    }
-    else
-    {
-        QMessageBox messageBoxError;
-        messageBoxError.critical(nullptr, "Ошибка", "Матрица должна быть квадратной!");
-        messageBoxError.setFixedSize(528,228);
     }
 }
 
@@ -694,6 +822,7 @@ void View::on_mul_matrix_button_clicked()
     {
         delete deleted->widget();
     }
+    ui->Notifications->setVisible(false);
     ui->variant_1->setVisible(false);
     ui->variant_2->setVisible(false);
     ui->variant_3->setVisible(false);
@@ -702,6 +831,14 @@ void View::on_mul_matrix_button_clicked()
     ui->C_sum->setVisible(false);
     ui->D_sum->setVisible(false);
     ui->sum_matrix->setVisible(false);
+    ui->Size_of_matrix_C->setVisible(false);
+    ui->Row_C->setVisible(false);
+    ui->x_C->setVisible(false);
+    ui->Column_C->setVisible(false);
+    ui->Size_of_matrix_D->setVisible(false);
+    ui->Row_D->setVisible(false);
+    ui->x_D->setVisible(false);
+    ui->Column_D->setVisible(false);
     ui->Size_of_matrix->setText("Размер матрицы A:");
     ui->Size_of_matrix_B->setVisible(true);
     ui->Row_B->setVisible(true);
@@ -711,12 +848,35 @@ void View::on_mul_matrix_button_clicked()
     ui->matrix->setVisible(true);
     ui->matrix->setText("A · B");
     int count = array.get_count_matrix();
+    int rows_matrix = array.get_rows();
+    int columns_matrix = array.get_columns();
+    while ((deleted = ui->gridLayout->takeAt(0))!= nullptr)
+    {
+        delete deleted->widget();
+    }
+    matrixA.resize(rows_matrix);
+    for (int i = 0; i < rows_matrix; i++)
+    {
+        matrixA[i].resize(columns_matrix);
+    }
+    for (int i = 0; i < rows_matrix; i++)
+    {
+        for (int j = 0; j < columns_matrix; j++)
+        {
+            QLineEdit* size = new QLineEdit("  0");
+            matrixA[i][j] = size;
+            ui->gridLayout->addWidget (size, i, j);
+            size->setFixedSize(24, 19);
+            ui->gridLayout->setRowStretch(rows_matrix, i);
+            ui->gridLayout->setColumnStretch(columns_matrix, j);
+        }
+    }
     while ((deleted = ui->gridLayout_2->takeAt(0))!= nullptr)
     {
         delete deleted->widget();
     }
-    int rows_matrix = array_B.get_rows();
-    int columns_matrix = array_B.get_columns();
+    rows_matrix = array_B.get_rows();
+    columns_matrix = array_B.get_columns();
     matrixB.resize(rows_matrix);
     for (int i = 0; i < rows_matrix; i++)
     {
@@ -764,65 +924,293 @@ void View::on_mul_matrix_button_clicked()
                  ui->gridLayout_3->setColumnStretch(columns_matrix, j);
              }
          }
+         if (count == 4)
+         {
+             ui->Size_of_matrix_D->setVisible(true);
+             ui->Row_D->setVisible(true);
+             ui->x_D->setVisible(true);
+             ui->Column_D->setVisible(true);
+             ui->matrix->setText("A · B · С · В");
+             rows_matrix = array_D.get_rows();
+             columns_matrix = array_D.get_columns();
+             while ((deleted = ui->gridLayout_4->takeAt(0))!= nullptr)
+             {
+                 delete deleted->widget();
+             }
+             matrixD.resize(rows_matrix);
+             for (int i = 0; i < rows_matrix; i++)
+             {
+                 matrixD[i].resize(columns_matrix);
+             }
+             for (int i = 0; i < rows_matrix; i++)
+             {
+                 for (int j = 0; j < columns_matrix; j++)
+                 {
+                     QLineEdit* size = new QLineEdit("  0");
+                     matrixD[i][j] = size;
+                     ui->gridLayout_4->addWidget (size, i, j);
+                     size->setFixedSize(24, 19);
+                     ui->gridLayout_4->setRowStretch(rows_matrix, i);
+                     ui->gridLayout_4->setColumnStretch(columns_matrix, j);
+                 }
+             }
+         }
     }
-    if (count == 4)
-    {
-        ui->Size_of_matrix_D->setVisible(true);
-        ui->Row_D->setVisible(true);
-        ui->x_D->setVisible(true);
-        ui->Column_D->setVisible(true);
-        ui->matrix->setText("A · B · С · В");
-        rows_matrix = array_D.get_rows();
-        columns_matrix = array_D.get_columns();
-        while ((deleted = ui->gridLayout_4->takeAt(0))!= nullptr)
-        {
-            delete deleted->widget();
-        }
-        matrixD.resize(rows_matrix);
-        for (int i = 0; i < rows_matrix; i++)
-        {
-            matrixD[i].resize(columns_matrix);
-        }
-        for (int i = 0; i < rows_matrix; i++)
-        {
-            for (int j = 0; j < columns_matrix; j++)
-            {
-                QLineEdit* size = new QLineEdit("  0");
-                matrixD[i][j] = size;
-                ui->gridLayout_4->addWidget (size, i, j);
-                size->setFixedSize(24, 19);
-                ui->gridLayout_4->setRowStretch(rows_matrix, i);
-                ui->gridLayout_4->setColumnStretch(columns_matrix, j);
-            }
-        }
-    }
-    connect (ui->Add_matrix, SIGNAL(clicked()), this, SLOT (on_mul_matrix_button_clicked()));
+    check_add_delete = 1;
     connect (ui->Row, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (on_mul_matrix_button_clicked()));
     connect (ui->Column, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (on_mul_matrix_button_clicked()));
-    connect (ui->Row_B, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (on_mul_matrix_button_clicked()));
-    connect (ui->Column_B, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (on_mul_matrix_button_clicked()));
-    connect (ui->Row_C, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (on_mul_matrix_button_clicked()));
-    connect (ui->Column_C, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (on_mul_matrix_button_clicked()));
-    connect (ui->Row_D, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (on_mul_matrix_button_clicked()));
-    connect (ui->Column_D, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (on_mul_matrix_button_clicked()));
+    disconnect(ui->Delete_matrix, SIGNAL(clicked()), this, SLOT (on_sum_sub_matrix_clicked()));
+    disconnect (ui->Add_matrix, SIGNAL(clicked()), this, SLOT (on_sum_sub_matrix_clicked()));
 }
 
-void View::on_sum_sub_matrix_clicked()
+void View::on_matrix_mul_clicked()
 {
     QLayoutItem* deleted;
     while ((deleted = ui->gridLayout_5->takeAt(0))!= nullptr)
     {
         delete deleted->widget();
     }
-    disconnect (ui->Row, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (on_mul_matrix_button_clicked()));
-    disconnect (ui->Column, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (on_mul_matrix_button_clicked()));
-    ui->variant_1->setVisible(false);
+    int counter = array.get_count_matrix();
+    int row_A = array.get_rows();
+    int column_A = array.get_columns();
+    double one_element;
+    int column_push = column_A;
+    QVector <QVector<double>> matrix1;
+    matrix1.resize(row_A);
+    for (int i = 0; i < row_A; i++)
+    {
+        matrix1[i].resize(column_A);
+    }
+    bool check_line_mul = false;
+    for (int i = 0; i < row_A; i++)
+    {
+        for (int j = 0; j < column_A; j++)
+        {
+            check_line_mul = array.check_line_edit(matrixA[i][j]->text());
+            if (check_line_mul == true)
+            {
+                one_element = matrixA[i][j]->text().toDouble();
+                matrix1[i][j] = one_element;
+            }
+            else
+            {
+                error_scanf(i, j, matrixA);
+                matrixA[i][j]->setStyleSheet("QLineEdit { background: rgb(255, 255, 255);}");
+                break;
+            }
+        }
+        if (check_line_mul == false)
+        {
+            break;
+        }
+    }
+    QVector <QVector<double>> matrix3;
+    QVector <QVector<double>> matrix4;
+    if (check_line_mul == true)
+    {
+        int row_B = array_B.get_rows();
+        int column_B = array_B.get_columns();
+        QVector <QVector<double>> matrix2;
+        matrix2.resize(row_B);
+        for (int i = 0; i < row_B; i++)
+        {
+            matrix2[i].resize(column_B);
+        }
+        check_line_mul = false;
+        for (int i = 0; i < row_B; i++)
+        {
+            for (int j = 0; j < column_B; j++)
+            {
+                check_line_mul = array.check_line_edit(matrixB[i][j]->text());
+                if (check_line_mul == true)
+                {
+                    one_element = matrixB[i][j]->text().toDouble();
+                    matrix2[i][j] = one_element;
+                }
+                else
+                {
+                     error_scanf(i, j, matrixB);
+                     matrixB[i][j]->setStyleSheet("QLineEdit { background: rgb(255, 255, 255);}");
+                     break;
+                }
+             }
+             if (check_line_mul == false)
+             {
+                    break;
+             }
+        }
+        if (check_line_mul == true)
+        {
+            array.set_matrix(matrix1);
+            array_B.set_matrix(matrix2);
+            if (counter > 2)
+            {
+                int row_C = array_C.get_rows();
+                int column_C = array_C.get_columns();
+                matrix3.resize(row_C);
+                for (int i = 0; i < row_C; i++)
+                {
+                    matrix3[i].resize(column_C);
+                }
+                check_line_mul = false;
+                for (int i = 0; i < row_C; i++)
+                {
+                    for (int j = 0; j < column_C; j++)
+                    {
+                        check_line_mul = array.check_line_edit(matrixC[i][j]->text());
+                        if (check_line_mul == true)
+                        {
+                            one_element = matrixC[i][j]->text().toDouble();
+                            matrix3[i][j] = one_element;
+                        }
+                        else
+                        {
+                             error_scanf(i, j, matrixC);
+                             matrixC[i][j]->setStyleSheet("QLineEdit { background: rgb(255, 255, 255);}");
+                             break;
+                        }
+                     }
+                     if (check_line_mul == false)
+                     {
+                            break;
+                     }
+                }
+                if (check_line_mul == true)
+                {
+                    array_C.set_matrix(matrix3);
+                    if (counter == 4)
+                    {
+                        int row_D = array_D.get_rows();
+                        int column_D = array_D.get_columns();
+                        matrix4.resize(row_D);
+                        for (int i = 0; i < row_D; i++)
+                        {
+                            matrix4[i].resize(column_D);
+                        }
+                        check_line_mul = false;
+                        for (int i = 0; i < row_D; i++)
+                        {
+                            for (int j = 0; j < column_D; j++)
+                            {
+                                check_line_mul = array.check_line_edit(matrixD[i][j]->text());
+                                if (check_line_mul == true)
+                                {
+                                    one_element = matrixD[i][j]->text().toDouble();
+                                    matrix4[i][j] = one_element;
+                                }
+                                else
+                                {
+                                     error_scanf(i, j, matrixD);
+                                     matrixD[i][j]->setStyleSheet("QLineEdit { background: rgb(255, 255, 255);}");
+                                     break;
+                                }
+                             }
+                             if (check_line_mul == false)
+                             {
+                                    break;
+                             }
+                        }
+                        if (check_line_mul == true)
+                        {
+                               array_D.set_matrix(matrix4);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if (check_line_mul == true)
+    {
+        bool columns_rows = true;
+        if (array == array_B)
+        {
+            array = array * array_B;
+            if (counter > 2)
+            {
+                if (array == array_C)
+                {
+                    array = array * array_C;
+                    if (counter == 4)
+                    {
+                        if (array == array_D)
+                        {
+                            array = array * array_D;
+                        }
+                        else
+                        {
+                            QMessageBox messageBoxError;
+                            messageBoxError.critical(nullptr, "Ошибка", "Количество столбцов одной матрицы не совпадает с количеством строк второй матрицы!");
+                            messageBoxError.setFixedSize(528,228);
+                            columns_rows = false;
+                        }
+                    }
+                }
+                else
+                {
+                    QMessageBox messageBoxError;
+                    messageBoxError.critical(nullptr, "Ошибка", "Количество столбцов одной матрицы не совпадает с количеством строк второй матрицы!");
+                    messageBoxError.setFixedSize(528,228);
+                    columns_rows = false;
+                }
+            }
+        }
+        else
+        {
+            QMessageBox messageBoxError;
+            messageBoxError.critical(nullptr, "Ошибка", "Количество столбцов одной матрицы не совпадает с количеством строк второй матрицы!");
+            messageBoxError.setFixedSize(528,228);
+            columns_rows = false;
+        }
+        if (columns_rows == true)
+        {
+            int rows_finish = array.get_rows();
+            int columns_finish = array.get_columns();
+            matrix1.resize(rows_finish);
+            for (int i = 0; i < rows_finish; i++)
+            {
+                matrix1[i].resize(columns_finish);
+            }
+            matrix1 = array.get_matrix();
+            int check;
+            for (int i = 0; i < rows_finish; i++)
+            {
+                for (int j = 0; j < columns_finish; j++)
+                {
+                    QLabel* size = new QLabel;
+                    QFont font = size->font();
+                    font.setPixelSize(12);
+                    size->setFont(font);
+                    check = matrix1[i][j];
+                    if(matrix1[i][j] == check)
+                    {
+                        size->setText(QString("%1").arg(matrix1[i][j], 0, 'f', 0));
+                    }
+                    else
+                    {
+                        size->setText(QString("%1").arg(matrix1[i][j], 0, 'f', 2));
+                    }
+                    ui->gridLayout_5->addWidget (size, i, j);
+                    size->setFixedSize(28, 19);
+                    ui->gridLayout_5->setRowStretch(1, i);
+                    ui->gridLayout_5->setColumnStretch(1, j);
+                }
+            }
+        }
+        array.set_columns(column_push);
+    }
+}
+
+void View::on_sum_sub_matrix_clicked()
+{
+    check_add_delete = 0;
+    QLayoutItem* deleted;
+    while ((deleted = ui->gridLayout_5->takeAt(0))!= nullptr)
+    {
+        delete deleted->widget();
+    }
+    ui->Notifications->setVisible(false);
     ui->variant_2->setVisible(false);
     ui->variant_3->setVisible(false);
-    ui->A_sum->setVisible(false);
-    ui->B_sum->setVisible(false);
-    ui->C_sum->setVisible(false);
-    ui->D_sum->setVisible(false);
     ui->Size_of_matrix_B->setVisible(false);
     ui->Size_of_matrix_C->setVisible(false);
     ui->Size_of_matrix_D->setVisible(false);
@@ -846,22 +1234,68 @@ void View::on_sum_sub_matrix_clicked()
     ui->sum_matrix->setVisible(true);
     int counter = array.get_count_matrix();
     ui->variant_1->setVisible(true);
-    if (counter == 2)
+    int rows_matrix = array.get_rows();
+    int columns_matrix = array.get_columns();
+
+    ui->A_sum->setVisible(true);
+    ui->B_sum->setVisible(true);
+    ui->C_sum->setVisible(false);
+    ui->D_sum->setVisible(false);
+    while ((deleted = ui->gridLayout_2->takeAt(0))!= nullptr)
     {
-        ui->A_sum->setVisible(true);
-        ui->B_sum->setVisible(true);
-        ui->C_sum->setVisible(false);
-        ui->D_sum->setVisible(false);
+        delete deleted->widget();
     }
-    else if (counter == 3)
+    matrixB.resize(rows_matrix);
+    for (int i = 0; i < rows_matrix; i++)
+    {
+        matrixB[i].resize(columns_matrix);
+    }
+    for (int i = 0; i < rows_matrix; i++)
+    {
+        QVector<QLineEdit> line;
+        for (int j = 0; j < columns_matrix; j++)
+        {
+            QLineEdit* size = new QLineEdit("  0");
+            matrixB[i][j] = size;
+            ui->gridLayout_2->addWidget (size, i, j);
+            size->setFixedSize(24, 19);
+            ui->gridLayout_2->setRowStretch(rows_matrix, i);
+            ui->gridLayout_2->setColumnStretch(columns_matrix, j);
+
+        }
+    }
+    if (counter > 2)
     {
         ui->A_sum->setVisible(true);
         ui->B_sum->setVisible(true);
         ui->C_sum->setVisible(true);
         ui->D_sum->setVisible(false);
         ui->variant_2->setVisible(true);
+        while ((deleted = ui->gridLayout_3->takeAt(0))!= nullptr)
+        {
+            delete deleted->widget();
+        }
+        matrixC.resize(rows_matrix);
+        for (int i = 0; i < rows_matrix; i++)
+        {
+            matrixC[i].resize(columns_matrix);
+        }
+        for (int i = 0; i < rows_matrix; i++)
+        {
+            QVector<QLineEdit> line;
+            for (int j = 0; j < columns_matrix; j++)
+            {
+                QLineEdit* size = new QLineEdit("  0");
+                matrixC[i][j] = size;
+                ui->gridLayout_3->addWidget (size, i, j);
+                size->setFixedSize(24, 19);
+                ui->gridLayout_3->setRowStretch(rows_matrix, i);
+                ui->gridLayout_3->setColumnStretch(columns_matrix, j);
+
+            }
+        }
     }
-    else
+    if (counter == 4)
     {
         ui->A_sum->setVisible(true);
         ui->B_sum->setVisible(true);
@@ -869,8 +1303,34 @@ void View::on_sum_sub_matrix_clicked()
         ui->D_sum->setVisible(true);
         ui->variant_2->setVisible(true);
         ui->variant_3->setVisible(true);
+        while ((deleted = ui->gridLayout_4->takeAt(0))!= nullptr)
+        {
+            delete deleted->widget();
+        }
+        matrixD.resize(rows_matrix);
+        for (int i = 0; i < rows_matrix; i++)
+        {
+            matrixD[i].resize(columns_matrix);
+        }
+        for (int i = 0; i < rows_matrix; i++)
+        {
+            QVector<QLineEdit> line;
+            for (int j = 0; j < columns_matrix; j++)
+            {
+                QLineEdit* size = new QLineEdit("  0");
+                matrixD[i][j] = size;
+                ui->gridLayout_4->addWidget (size, i, j);
+                size->setFixedSize(24, 19);
+                ui->gridLayout_4->setRowStretch(rows_matrix, i);
+                ui->gridLayout_4->setColumnStretch(columns_matrix, j);
+
+            }
+        }
     }
     connect (ui->Add_matrix, SIGNAL(clicked()), this, SLOT (on_sum_sub_matrix_clicked()));
+    connect (ui->Delete_matrix, SIGNAL(clicked()), this, SLOT (on_sum_sub_matrix_clicked()));
+    disconnect (ui->Row, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (on_mul_matrix_button_clicked()));
+    disconnect (ui->Column, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (on_mul_matrix_button_clicked()));
 }
 void View::on_sum_matrix_clicked()
 {
@@ -890,95 +1350,163 @@ void View::on_sum_matrix_clicked()
     {
         matrix1[i].resize(column);
     }
+    bool check_line_sum = false;
     for (int i = 0; i < row; i++)
     {
         for (int j = 0; j < column; j++)
         {
-            one_element = matrixA[i][j]->text().toDouble();
-            matrix1[i][j] = one_element;
-        }
+            check_line_sum = array.check_line_edit(matrixA[i][j]->text());
+            if (check_line_sum == true)
+            {
+                one_element = matrixA[i][j]->text().toDouble();
+                matrix1[i][j] = one_element;
+            }
+            else
+            {
+                 error_scanf(i, j, matrixA);
+                 matrixA[i][j]->setStyleSheet("QLineEdit { background: rgb(255, 255, 255);}");
+                 break;
+            }
+         }
+         if (check_line_sum == false)
+         {
+                break;
+         }
     }
-
-    QVector <QVector<double>> matrix2;
-    matrix2.resize(row);
-    for (int i = 0; i < row; i++)
+    if (check_line_sum == true)
     {
-        matrix2[i].resize(column);
-    }
-    for (int i = 0; i < row; i++)
-    {
-        for (int j = 0; j < column; j++)
-        {
-            one_element = matrixB[i][j]->text().toDouble();
-            matrix2[i][j] = one_element;
-        }
-    }
-    if (counter_matrix == 2)
-    {
-        array.set_matrix(matrix1, matrix2);
-    }
-    else
-    {
-        QVector <QVector<double>> matrix3;
-        matrix3.resize(row);
+        QVector <QVector<double>> matrix2;
+        matrix2.resize(row);
         for (int i = 0; i < row; i++)
         {
-            matrix3[i].resize(column);
+            matrix2[i].resize(column);
         }
         for (int i = 0; i < row; i++)
         {
             for (int j = 0; j < column; j++)
             {
-                one_element = matrixC[i][j]->text().toDouble();
-                matrix3[i][j] = one_element;
-            }
-        }
-        if (counter_matrix == 4)
-        {
-            QVector <QVector<double>> matrix4;
-            matrix4.resize(row);
-            for (int i = 0; i < row; i++)
-            {
-                matrix4[i].resize(column);
-            }
-            for (int i = 0; i < row; i++)
-            {
-                for (int j = 0; j < column; j++)
+                check_line_sum = array.check_line_edit(matrixB[i][j]->text());
+                if (check_line_sum == true)
                 {
-                    one_element = matrixD[i][j]->text().toDouble();
-                    matrix4[i][j] = one_element;
+                    one_element = matrixB[i][j]->text().toDouble();
+                    matrix2[i][j] = one_element;
                 }
-            }
-            array.set_matrix(matrix1, matrix2, matrix3, matrix4);
+                else
+                {
+                     error_scanf(i, j, matrixB);
+                     matrixB[i][j]->setStyleSheet("QLineEdit { background: rgb(255, 255, 255);}");
+                     break;
+                }
+             }
+             if (check_line_sum == false)
+             {
+                    break;
+             }
         }
-        else
+        if (check_line_sum == true)
         {
-            array.set_matrix(matrix1, matrix2, matrix3);
-        }
-    }
-    matrix1 = array.sum_sub_matrix();
-    int check;
-    for (int i = 0; i < row; i++)
-    {
-        for (int j = 0; j < column; j++)
-        {
-            QLabel* size = new QLabel;
-            QFont font = size->font();
-            font.setPixelSize(12);
-            size->setFont(font);
-            check = matrix1[i][j];
-            if(matrix1[i][j] == check)
+            QVector <QVector<double>> matrix3;
+            QVector <QVector<double>> matrix4;
+            if (counter_matrix == 2)
             {
-                size->setText(QString("%1").arg(matrix1[i][j], 0, 'f', 0));
+                array.set_matrix(matrix1, matrix2);
             }
             else
             {
-                size->setText(QString("%1").arg(matrix1[i][j], 0, 'f', 2));
+                matrix3.resize(row);
+                for (int i = 0; i < row; i++)
+                {
+                    matrix3[i].resize(column);
+                }
+                for (int i = 0; i < row; i++)
+                {
+                    for (int j = 0; j < column; j++)
+                    {
+                        check_line_sum = array.check_line_edit(matrixC[i][j]->text());
+                        if (check_line_sum == true)
+                        {
+                            one_element = matrixC[i][j]->text().toDouble();
+                            matrix3[i][j] = one_element;
+                        }
+                        else
+                        {
+                             error_scanf(i, j, matrixC);
+                             matrixC[i][j]->setStyleSheet("QLineEdit { background: rgb(255, 255, 255);}");
+                             break;
+                        }
+                     }
+                     if (check_line_sum == false)
+                     {
+                            break;
+                     }
+                }
+                if (check_line_sum == true)
+                {
+                    if (counter_matrix == 4)
+                    {
+                        matrix4.resize(row);
+                        for (int i = 0; i < row; i++)
+                        {
+                            matrix4[i].resize(column);
+                        }
+                        for (int i = 0; i < row; i++)
+                        {
+                            for (int j = 0; j < column; j++)
+                            {
+                                check_line_sum = array.check_line_edit(matrixD[i][j]->text());
+                                if (check_line_sum == true)
+                                {
+                                    one_element = matrixD[i][j]->text().toDouble();
+                                    matrix4[i][j] = one_element;
+                                }
+                                else
+                                {
+                                     error_scanf(i, j, matrixD);
+                                     matrixD[i][j]->setStyleSheet("QLineEdit { background: rgb(255, 255, 255);}");
+                                     break;
+                                }
+                             }
+                             if (check_line_sum == false)
+                             {
+                                    break;
+                             }
+                        }
+                        array.set_matrix(matrix1, matrix2, matrix3, matrix4);
+                    }
+                    else
+                    {
+                        array.set_matrix(matrix1, matrix2, matrix3);
+                    }
+                }
             }
-            ui->gridLayout_5->addWidget (size, i, j);
-            size->setFixedSize(28, 19);
-            ui->gridLayout_5->setRowStretch(1, i);
-            ui->gridLayout_5->setColumnStretch(1, j);
+        }
+    }
+    if (check_line_sum == true)
+    {
+        matrix1 = array.sum_sub_matrix();
+        int check;
+        for (int i = 0; i < row; i++)
+        {
+            for (int j = 0; j < column; j++)
+            {
+                QLabel* size = new QLabel;
+                QFont font = size->font();
+                font.setPixelSize(12);
+                size->setFont(font);
+                check = matrix1[i][j];
+                if(matrix1[i][j] == check)
+                {
+                    size->setText(QString("%1").arg(matrix1[i][j], 0, 'f', 0));
+                }
+                else
+                {
+                    size->setText(QString("%1").arg(matrix1[i][j], 0, 'f', 2));
+                }
+                ui->gridLayout_5->addWidget (size, i, j);
+                size->setFixedSize(28, 19);
+                ui->gridLayout_5->setRowStretch(1, i);
+                ui->gridLayout_5->setColumnStretch(1, j);
+            }
         }
     }
 }
@@ -1050,4 +1578,20 @@ void View::on_Column_D_currentTextChanged(const QString &D)
     column = D.toInt();
     array_D.set_columns(column);
     on_mul_matrix_button_clicked();
+}
+
+void View::error_scanf(int row, int column, QVector<QVector<QLineEdit*>> matrix)
+{
+    matrix[row][column]->setStyleSheet("QLineEdit { background: rgb(240, 128, 128);}");
+    QMessageBox messageBoxError;
+    messageBoxError.critical(nullptr, "Ошибка", "Неправильный формат ввода!");
+    messageBoxError.setFixedSize(528,228);
+}
+
+void View::error_scanf()
+{
+    ui->number->setStyleSheet("QLineEdit { background: rgb(240, 128, 128);}");
+    QMessageBox messageBoxError;
+    messageBoxError.critical(nullptr, "Ошибка", "Неправильный формат ввода!");
+    messageBoxError.setFixedSize(528,228);
 }
