@@ -1332,6 +1332,7 @@ void View::on_sum_sub_matrix_clicked()
     disconnect (ui->Row, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (on_mul_matrix_button_clicked()));
     disconnect (ui->Column, SIGNAL(currentIndexChanged(const QString &)), this, SLOT (on_mul_matrix_button_clicked()));
 }
+
 void View::on_sum_matrix_clicked()
 {
     QLayoutItem* deleted;

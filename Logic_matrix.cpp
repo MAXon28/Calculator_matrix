@@ -597,7 +597,10 @@ bool Logic_matrix::check_line_edit(QString line)
                 {
                     if (line[i] < 48 || line[i] > 57)
                     {
-                        check++;
+                        if(line[i] != '-')
+                        {
+                            check++;
+                        }
                     }
                 }
                 else
@@ -628,7 +631,10 @@ bool Logic_matrix::check_line_edit(QString line)
                 {
                     if (line[i] < 48 || line[i] > 57)
                     {
-                        check++;
+                        if(line[i] != '-')
+                        {
+                            check++;
+                        }
                     }
                 }
                 else
@@ -653,7 +659,10 @@ bool Logic_matrix::check_line_edit(QString line)
             {
                 if (line[i] < 48 || line[i] > 57)
                 {
-                    check++;
+                    if(line[i] != '-')
+                    {
+                        check++;
+                    }
                 }
             }
             else
